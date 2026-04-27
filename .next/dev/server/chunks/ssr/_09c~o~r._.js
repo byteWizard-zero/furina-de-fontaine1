@@ -12,7 +12,23 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 const metadata = {
     title: 'The Court of Fontaine',
-    description: 'Oratrice Mécanique d\'Analyse Cardinale'
+    description: 'Oratrice Mécanique d\'Analyse Cardinale',
+    openGraph: {
+        title: "The Furina Court",
+        description: "An interactive AI experience in the heart of Fontaine.",
+        url: "https://furina-de-fontaine1.vercel.app/",
+        siteName: "Furina Court",
+        // Remember: this image must be in your 'public' folder!
+        images: [
+            {
+                url: "/og-Furina.jpeg",
+                width: 1200,
+                height: 630,
+                alt: "Lady Furina's dramatic courtroom interface"
+            }
+        ],
+        type: "website"
+    }
 };
 function RootLayout({ children }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("html", {
@@ -24,12 +40,12 @@ function RootLayout({ children }) {
                     rel: "stylesheet"
                 }, void 0, false, {
                     fileName: "[project]/app/layout.jsx",
-                    lineNumber: 11,
+                    lineNumber: 27,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/layout.jsx",
-                lineNumber: 9,
+                lineNumber: 25,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("body", {
@@ -40,13 +56,13 @@ function RootLayout({ children }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/app/layout.jsx",
-                lineNumber: 16,
+                lineNumber: 32,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/layout.jsx",
-        lineNumber: 8,
+        lineNumber: 24,
         columnNumber: 5
     }, this);
 }

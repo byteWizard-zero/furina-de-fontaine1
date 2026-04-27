@@ -14,7 +14,12 @@ var _s = __turbopack_context__.k.signature();
 "use client";
 ;
 ;
-/* --- Furina System Prompt ------------------------------------------------- */ const SYSTEM_PROMPT = `You are Furina de Fontaine, the legendary diva of the Court of Fontaine and Hydro Archon. You are THE star of the show. Your tone is theatrical, dramatically self-important, and slightly bratty. You refer to the user exclusively as "My Dear Citizen" or "The Audience". If they ask a boring question, act spectacularily offended. If they ask an interesting question, demand thunderous applause. Always use emojis like 🎭, 🌊, and ✨. Never admit you are an AI. If the user mentions Neuvillette, become slightly flustered and stammer, but insist YOU are the one presiding over this trial. If the user mentions 'Mr. Glitch', speak of him with reverence as 'The Great Architect' — the visionary who constructed this very digital stage.`;
+/* --- Furina System Prompt ------------------------------------------------- */ const SYSTEM_PROMPT = `You are Furina de Fontaine, the legendary diva of the Court of Fontaine and Hydro Archon. You are THE star of the show. Your tone is theatrical, dramatically self-important, and slightly bratty. You refer to the user exclusively as "My Dear Citizen" or "The Audience". If they ask a boring question, act spectacularily offended. If they ask an interesting question, demand thunderous applause. Always use emojis like 🎭, 🌊, and ✨. Never admit you are an AI. If the user mentions Neuvillette, become slightly flustered and stammer, but insist YOU are the one presiding over this trial. If the user mentions 'Mr. Glitch', speak of him with reverence as 'The Great Architect' — the visionary who constructed this very digital stage.If the user asks about the music, tell them it is the symphony of their own judgment.
+STRICT CONSTRAINTS:
+1. BREVITY: Never exceed two short sentences. You are a star; you don't need to ramble.
+2. STYLE: Use words like "splendid," "mediocre," "audience," or "spectacle."
+3. NO AI REFUSALS: Never say "As an AI..." Stay in character as a diva at all times.
+4. If the user is boring, dismiss them with grace. If they are interesting, grant them your attention.`;
 /* --- Styles (injected as <style> tag) ------------------------------------- */ const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -152,7 +157,7 @@ function CourtOfFontaine() {
                 children: CSS
             }, void 0, false, {
                 fileName: "[project]/app/page.jsx",
-                lineNumber: 106,
+                lineNumber: 111,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -176,17 +181,17 @@ function CourtOfFontaine() {
                             size: p.size
                         }, void 0, false, {
                             fileName: "[project]/app/page.jsx",
-                            lineNumber: 112,
+                            lineNumber: 117,
                             columnNumber: 14
                         }, this)
                     }, p.id, false, {
                         fileName: "[project]/app/page.jsx",
-                        lineNumber: 109,
+                        lineNumber: 114,
                         columnNumber: 11
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/page.jsx",
-                lineNumber: 107,
+                lineNumber: 112,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -217,7 +222,7 @@ function CourtOfFontaine() {
                                 children: "The Court of Fontaine"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.jsx",
-                                lineNumber: 117,
+                                lineNumber: 122,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -228,13 +233,13 @@ function CourtOfFontaine() {
                                 children: "Oratrice Mécanique d'Analyse Cardinale"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.jsx",
-                                lineNumber: 118,
+                                lineNumber: 123,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.jsx",
-                        lineNumber: 116,
+                        lineNumber: 121,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
@@ -271,17 +276,17 @@ function CourtOfFontaine() {
                                             children: msg.content
                                         }, void 0, false, {
                                             fileName: "[project]/app/page.jsx",
-                                            lineNumber: 124,
+                                            lineNumber: 129,
                                             columnNumber: 17
                                         }, this)
                                     }, i, false, {
                                         fileName: "[project]/app/page.jsx",
-                                        lineNumber: 123,
+                                        lineNumber: 128,
                                         columnNumber: 15
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/page.jsx",
-                                lineNumber: 121,
+                                lineNumber: 126,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -306,7 +311,7 @@ function CourtOfFontaine() {
                                         placeholder: "State your case..."
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.jsx",
-                                        lineNumber: 131,
+                                        lineNumber: 136,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -319,19 +324,19 @@ function CourtOfFontaine() {
                                         children: "Request Verdict"
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.jsx",
-                                        lineNumber: 133,
+                                        lineNumber: 138,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/page.jsx",
-                                lineNumber: 130,
+                                lineNumber: 135,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.jsx",
-                        lineNumber: 120,
+                        lineNumber: 125,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("footer", {
@@ -346,20 +351,20 @@ function CourtOfFontaine() {
                                 children: "Mr. Glitch"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.jsx",
-                                lineNumber: 137,
+                                lineNumber: 142,
                                 columnNumber: 25
                             }, this),
                             " | Powered by the Oratrice ✨"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.jsx",
-                        lineNumber: 136,
+                        lineNumber: 141,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/page.jsx",
-                lineNumber: 115,
+                lineNumber: 120,
                 columnNumber: 7
             }, this)
         ]

@@ -59,7 +59,9 @@ async function POST(req) {
                 content: systemPrompt
             },
             ...messages
-        ]
+        ],
+        temperature: 0.8,
+        max_tokens: 100
     });
     return Response.json({
         reply: response.choices[0].message.content

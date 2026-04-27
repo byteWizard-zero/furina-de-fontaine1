@@ -1,6 +1,22 @@
 export const metadata = {
   title: 'The Court of Fontaine',
   description: 'Oratrice Mécanique d\'Analyse Cardinale',
+  openGraph: {
+    title: "The Furina Court",
+    description: "An interactive AI experience in the heart of Fontaine.",
+    url: "https://furina-de-fontaine1.vercel.app/",
+    siteName: "Furina Court",
+    // Remember: this image must be in your 'public' folder!
+    images: [
+      {
+        url:  "/og-Furina.jpeg", 
+        width: 1200,
+        height: 630,
+        alt: "Lady Furina's dramatic courtroom interface",
+      },
+    ],
+    type: "website",
+  },
 }
 
 export default function RootLayout({ children }) {
