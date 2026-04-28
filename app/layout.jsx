@@ -1,3 +1,5 @@
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
 export const metadata = {
   title: 'The Court of Fontaine',
   description: 'Oratrice Mécanique d\'Analyse Cardinale',
@@ -31,6 +33,7 @@ export default function RootLayout({ children }) {
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   )
