@@ -32,6 +32,36 @@
 
 ## 🚀 Getting Started
 
-1. **Clone the repository:**
+### Prerequisites
+* [Node.js](https://nodejs.org/) (v18+)
+* A Groq API Key. You can get one from the [Groq Console](https://console.groq.com/).
+
+### Installation
+
+1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/furina-court.git](https://github.com/YOUR_USERNAME/furina-court.git)
+   git clone https://github.com/1bitVscoder/furina-de-fontaine1.git
+   cd furina-de-fontaine1
+   ```
+
+2. **Install Dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Create a `.env.local` file in the root directory and add your API key:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   ```
+
+4. **Start Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000` in your browser.
+
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```
