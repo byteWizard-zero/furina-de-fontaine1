@@ -1,9 +1,23 @@
 import { OpenAI } from 'openai';
 
-const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY || 'placeholder',
-  baseURL: "https://api.groq.com/openai/v1",
-});
+let groqClient = null;
+
+// Dynamically look up environment variables to prevent build-time inlining by Webpack/Turbopack.
+function getApiKey() {
+  const env = process.env;
+  const keyName = 'GROQ_API_KEY';
+  return env[keyName];
+}
+
+function getGroqClient() {
+  if (!groqClient) {
+    groqClient = new OpenAI({
+      apiKey: getApiKey(),
+      baseURL: "https://api.groq.com/openai/v1",
+    });
+  }
+  return groqClient;
+}
 
 // Theatrical in-character fallback replies
 const FALLBACK_RESPONSES = [
@@ -18,14 +32,16 @@ const FALLBACK_RESPONSES = [
 export async function POST(req) {
   const { messages, systemPrompt } = await req.json();
   
-  // If GROQ_API_KEY is unset or is 'placeholder', we can trigger fallback immediately
-  const hasValidKey = process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'placeholder';
+  // If GROQ_API_KEY is unset or doesn't follow the Groq key pattern (starts with gsk_), trigger fallback
+  const apiKey = getApiKey();
+  const hasValidKey = apiKey && apiKey.startsWith("gsk_");
 
   if (!hasValidKey) {
     return Response.json({ reply: getLocalFallbackReply(messages) });
   }
 
   try {
+    const groq = getGroqClient();
     const response = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [

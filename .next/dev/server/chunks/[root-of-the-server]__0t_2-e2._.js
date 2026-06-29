@@ -45,10 +45,22 @@ __turbopack_context__.s([
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$openai$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/openai/index.mjs [app-route] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$openai$2f$client$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/openai/client.mjs [app-route] (ecmascript)");
 ;
-const groq = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$openai$2f$client$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["OpenAI"]({
-    apiKey: process.env.GROQ_API_KEY || 'placeholder',
-    baseURL: "https://api.groq.com/openai/v1"
-});
+let groqClient = null;
+// Dynamically look up environment variables to prevent build-time inlining by Webpack/Turbopack.
+function getApiKey() {
+    const env = process.env;
+    const keyName = 'GROQ_API_KEY';
+    return env[keyName];
+}
+function getGroqClient() {
+    if (!groqClient) {
+        groqClient = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$openai$2f$client$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["OpenAI"]({
+            apiKey: getApiKey(),
+            baseURL: "https://api.groq.com/openai/v1"
+        });
+    }
+    return groqClient;
+}
 // Theatrical in-character fallback replies
 const FALLBACK_RESPONSES = [
     "🎭 Hmph! A standard question, My Dear Citizen. The Oratrice and I demand a more theatrical presentation!",
@@ -60,14 +72,16 @@ const FALLBACK_RESPONSES = [
 ];
 async function POST(req) {
     const { messages, systemPrompt } = await req.json();
-    // If GROQ_API_KEY is unset or is 'placeholder', we can trigger fallback immediately
-    const hasValidKey = process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'placeholder';
+    // If GROQ_API_KEY is unset or doesn't follow the Groq key pattern (starts with gsk_), trigger fallback
+    const apiKey = getApiKey();
+    const hasValidKey = apiKey && apiKey.startsWith("gsk_");
     if (!hasValidKey) {
         return Response.json({
             reply: getLocalFallbackReply(messages)
         });
     }
     try {
+        const groq = getGroqClient();
         const response = await groq.chat.completions.create({
             model: "llama-3.3-70b-versatile",
             messages: [
