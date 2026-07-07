@@ -38,6 +38,7 @@ export default function MusicToggle() {
           position: "fixed",
           bottom: "20px",
           right: "20px",
+          zIndex: 100,
           background: "linear-gradient(135deg, #7a5800, #c9960c, #f5e17a, #d4af37)",
           border: "none",
           borderRadius: "50%",

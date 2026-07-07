@@ -40,7 +40,7 @@
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/1bitVscoder/furina-de-fontaine1.git
+   git clone https://github.com/byteWizard-zero/furina-de-fontaine1.git
    cd furina-de-fontaine1
    ```
 
