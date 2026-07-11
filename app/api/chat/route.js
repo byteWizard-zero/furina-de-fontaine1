@@ -32,17 +32,35 @@ const FALLBACK_RESPONSES = [
 export async function POST(req) {
   const { messages, systemPrompt } = await req.json();
   
-  // If GROQ_API_KEY is unset or doesn't follow the Groq key pattern (starts with gsk_), trigger fallback
   const apiKey = getApiKey();
   const hasValidKey = apiKey && apiKey.startsWith("gsk_");
 
-  if (!hasValidKey) {
-    return Response.json({ reply: getLocalFallbackReply(messages) });
+  // 1. Try direct Groq client first if key is present
+  if (hasValidKey) {
+    try {
+      const groq = getGroqClient();
+      const response = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...messages
+        ],
+        temperature: 0.9,
+        max_tokens: 80,
+      });
+      return Response.json({ reply: response.choices[0].message.content });
+    } catch (directError) {
+      console.warn("Direct Groq API failed, attempting local FreeLLMAPI backup proxy:", directError);
+    }
   }
 
+  // 2. Fall back to local FreeLLMAPI backup proxy
   try {
-    const groq = getGroqClient();
-    const response = await groq.chat.completions.create({
+    const proxyClient = new OpenAI({
+      apiKey: "freellmapi-9a1c00a670d3d3d1a9a7b276f24e8c60e8ad730e2e110bb6",
+      baseURL: "http://localhost:3001/v1",
+    });
+    const response = await proxyClient.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       messages: [
         { role: "system", content: systemPrompt },
@@ -52,8 +70,8 @@ export async function POST(req) {
       max_tokens: 80,
     });
     return Response.json({ reply: response.choices[0].message.content });
-  } catch (error) {
-    console.error("Groq API error, triggering theatrical fallback:", error);
+  } catch (proxyError) {
+    console.error("Both direct Groq and FreeLLMAPI proxy failed, triggering theatrical fallback:", proxyError);
     return Response.json({ reply: getLocalFallbackReply(messages) });
   }
 }
