@@ -47,7 +47,7 @@ export async function POST(req) {
         ],
         temperature: 0.9,
         max_tokens: 80,
-      });
+      }, { timeout: 5000 });
       return Response.json({ reply: response.choices[0].message.content });
     } catch (directError) {
       console.warn("Direct Groq API failed, attempting local FreeLLMAPI backup proxy:", directError);
