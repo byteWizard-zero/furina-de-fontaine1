@@ -111,31 +111,61 @@ async function completeWithContinuation(client, requestOpts, isProxy = true) {
 }
 
 /**
+ * Strips formulaic greeting crutches like "Ah, mon cher", "Mon cher visitor,", etc.
+ */
+function stripRepetitiveOpening(text) {
+  if (!text) return text;
+  const regex = /^(?:ah,?\s*)?(?:mon\s+cher(?:\s+(?:visitor|spectat(?:eur|rice)|citizen|traveler|friend|accuser))?|ma\s+ch[eè]re|my\s+dear\s+citizen)[,!:—\s]*/i;
+  const cleaned = text.replace(regex, '').trim();
+  if (!cleaned) return text;
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
+/**
+ * Strips leaked reasoning tags or chain-of-thought blocks.
+ */
+function sanitizeContent(rawText) {
+  if (!rawText) return '';
+  let cleaned = rawText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+  if (/^(we need to|we must|the user asks|let's craft)/i.test(cleaned)) {
+    const parts = cleaned.split(/\n\s*\n/);
+    const nonReasoning = parts.filter((p) => !/^(we need to|we must|the user asks|let's craft)/i.test(p.trim()));
+    if (nonReasoning.length > 0) {
+      cleaned = nonReasoning.join('\n\n');
+    }
+  }
+  return cleaned.trim();
+}
+
+/**
  * Splits text into multiple distinct speech bubbles.
  * Supports delimiter "|||", double newlines, or single fallback.
  */
 function parseBubbles(rawText) {
-  if (!rawText) return [];
+  const sanitized = sanitizeContent(rawText);
+  if (!sanitized) return [];
 
-  // Check explicit ||| delimiter first
-  if (rawText.includes('|||')) {
-    const list = rawText
+  let list = [];
+  if (sanitized.includes('|||')) {
+    list = sanitized
       .split('|||')
       .map((s) => s.trim())
       .filter(Boolean);
-    if (list.length > 0) return list;
-  }
-
-  // Check double newline separation
-  if (rawText.includes('\n\n')) {
-    const list = rawText
+  } else if (sanitized.includes('\n\n')) {
+    list = sanitized
       .split(/\n\s*\n/)
       .map((s) => s.trim())
       .filter(Boolean);
-    if (list.length > 0) return list;
+  } else {
+    list = [sanitized.trim()];
   }
 
-  return [rawText.trim()];
+  // Strip formulaic opening from the first bubble
+  if (list.length > 0) {
+    list[0] = stripRepetitiveOpening(list[0]);
+  }
+
+  return list.filter(Boolean);
 }
 
 /* ─── Multi-Bubble Theatrical Fallback Replies ─── */
@@ -145,7 +175,7 @@ const FALLBACK_RESPONSES = [
   "Silence in the Opera Epiclese! ||| Let the melodic gears of the Oratrice weigh the sheer drama of your statement! ||| What further claims do you dare bring to my stage?",
   "An intriguing plea, traveler! ||| *eyes sparkle with theatrical delight* Though I suspect you are concealing the finest details just to tease the spotlight! ||| Unfold the rest of the tale!",
   "Did you truly believe such a simple claim would sway the Hydro Archon? ||| Deliver your testimony with genuine passion! ||| The court awaits your crescendo.",
-  "Ah, the suspense builds! The audience leans in, the spotlight intensifies... ||| Do proceed! What other secrets does your case harbor?",
+  "The suspense builds! ||| The audience leans in, the spotlight intensifies... ||| Do proceed! What other secrets does your case harbor?",
   "A performance of dubious legal merit, yet I cannot deny its entertainment value! ||| Speak on! Let us see if your logic holds against the tides.",
   "The waters of Fontaine churn with curiosity! ||| Is this your definitive plea, or merely the prelude to an even greater revelation?",
   "Such theatrical audacity! ||| Even my Salon Solitaire members would pause their rehearsal to hear how you justify this! ||| Continue, if you dare.",
