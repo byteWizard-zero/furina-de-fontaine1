@@ -176,62 +176,137 @@ body {
   border-radius: 4px;
 }
 
-/* ─── Liquid Glass Surface ─── */
-.glass {
+/* ─── SwiftUI Liquid Glass Design System ─── */
+.glass,
+.glass-regular {
   background: var(--liquid-glass-bg);
   backdrop-filter: var(--liquid-glass-filter);
   -webkit-backdrop-filter: var(--liquid-glass-filter-safe);
   border: 1px solid var(--liquid-glass-border);
   box-shadow: var(--liquid-glass-shadow);
   position: relative;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass::before {
+.glass::before,
+.glass-regular::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.5), inset -1px -1px 2px rgba(0, 242, 254, 0.2);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.55), inset -1px -1px 2px rgba(0, 242, 254, 0.2);
   opacity: 0.85;
 }
 
-/* ─── Liquid Gold CTA Button ─── */
-.request-btn {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(212, 175, 55, 0.85) 35%, rgba(122, 88, 0, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+/* GlassEffectContainer: Grouping multiple glass surfaces */
+.glass-container {
+  position: relative;
+  border-radius: var(--radius-xl);
+  backdrop-filter: var(--liquid-glass-filter);
+  -webkit-backdrop-filter: var(--liquid-glass-filter-safe);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(0, 28, 56, 0.44) 45%, rgba(0, 12, 26, 0.72) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.35),
-    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.8),
-    inset 0 0 8px rgba(255, 255, 255, 0.3),
-    inset -2px -2px 6px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+    0 20px 50px rgba(0, 8, 22, 0.6),
+    inset 6px 6px 0px -5px rgba(255, 255, 255, 0.75),
+    inset 0 0 16px 2px rgba(255, 255, 255, 0.18),
+    inset -4px -4px 10px rgba(0, 242, 254, 0.2);
+}
+
+/* .glassEffect(.regular.interactive()) */
+.glass-interactive {
+  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease,
+              background 0.28s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glass-interactive:hover {
+  transform: translateY(-2px) scale(1.01);
+  border-color: rgba(0, 242, 254, 0.5);
+  box-shadow: 
+    0 14px 36px rgba(0, 10, 30, 0.55),
+    inset 3px 3px 0px -1px rgba(255, 255, 255, 0.9),
+    inset 0 0 14px rgba(0, 242, 254, 0.3),
+    0 0 20px rgba(0, 242, 254, 0.25);
+}
+
+.glass-interactive:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* .buttonStyle(.glassProminent) */
+.glass-prominent,
+.request-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(245, 225, 122, 0.92) 32%, rgba(190, 140, 12, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 
+    0 10px 28px rgba(0, 0, 0, 0.38),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.95),
+    inset 0 0 10px rgba(255, 255, 255, 0.4),
+    inset -2px -2px 6px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px) url(#displacementFilter);
+  -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
   font-weight: 700;
   color: #0b0700;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.45);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
   border-radius: var(--radius-md);
   position: relative;
   overflow: hidden;
 }
+
+.glass-prominent:hover:not(:disabled),
 .request-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.01);
   box-shadow: 
-    0 12px 28px rgba(212, 175, 55, 0.55),
-    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.95),
-    inset 0 0 12px rgba(255, 255, 255, 0.5),
-    0 0 20px rgba(0, 242, 254, 0.3);
-  border-color: rgba(255, 255, 255, 0.6);
+    0 14px 34px rgba(212, 175, 55, 0.6),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 1),
+    inset 0 0 14px rgba(255, 255, 255, 0.55),
+    0 0 25px rgba(0, 242, 254, 0.35);
+  border-color: rgba(255, 255, 255, 0.8);
 }
+
+.glass-prominent:active:not(:disabled),
 .request-btn:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
 }
+
 .request-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ─── Semantic Liquid Glass Tints (.tint(...)) ─── */
+.glass-tint-hydro {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(0, 36, 72, 0.6) 35%, rgba(0, 16, 36, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.7),
+    inset 0 0 10px 1px rgba(0, 242, 254, 0.18);
+}
+
+.glass-tint-gold {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(212, 175, 55, 0.24) 40%, rgba(60, 45, 10, 0.45) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.75),
+    inset 0 0 8px 1px rgba(212, 175, 55, 0.2);
+}
+
+.glass-tint-danger {
+  background: linear-gradient(135deg, rgba(255, 50, 50, 0.18) 0%, rgba(60, 10, 20, 0.6) 60%, rgba(30, 5, 10, 0.8) 100%);
+  border: 1px solid rgba(255, 80, 80, 0.45);
+  box-shadow: 
+    0 10px 30px rgba(50, 0, 0, 0.5),
+    inset 2px 2px 0px -1px rgba(255, 150, 150, 0.6),
+    inset 0 0 12px rgba(255, 50, 50, 0.25);
 }
 
 /* ─── Keyframes ─── */

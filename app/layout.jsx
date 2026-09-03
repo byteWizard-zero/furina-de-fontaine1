@@ -65,15 +65,15 @@ export default function RootLayout({ children }) {
           <defs>
             <filter id="displacementFilter" x="-20%" y="-20%" width="140%" height="140%">
               <feTurbulence
-                type="turbulence"
-                baseFrequency="0.012"
-                numOctaves="2"
-                result="turbulence"
+                type="fractalNoise"
+                baseFrequency="0.015"
+                numOctaves="3"
+                result="fluidNoise"
               />
               <feDisplacementMap
                 in="SourceGraphic"
-                in2="turbulence"
-                scale="28"
+                in2="fluidNoise"
+                scale="20"
                 xChannelSelector="R"
                 yChannelSelector="G"
               />

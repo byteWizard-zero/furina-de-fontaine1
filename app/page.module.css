@@ -32,20 +32,20 @@
   position: absolute;
 }
 
-/* ─── Liquid Glass Navigation Dock ─── */
+/* ─── SwiftUI Liquid Glass Navigation Dock (GlassEffectContainer) ─── */
 .nav {
   display: flex;
   gap: 6px;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(0, 32, 64, 0.5) 50%, rgba(0, 16, 32, 0.75) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(0, 32, 64, 0.48) 50%, rgba(0, 16, 32, 0.75) 100%);
   padding: 6px 10px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow: 
     0 12px 36px rgba(0, 8, 20, 0.55),
-    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.75),
-    inset 0 0 10px rgba(255, 255, 255, 0.15),
-    inset -2px -2px 6px rgba(0, 242, 254, 0.2);
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.8),
+    inset 0 0 12px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 6px rgba(0, 242, 254, 0.22);
   backdrop-filter: blur(16px) url(#displacementFilter);
   -webkit-backdrop-filter: blur(16px);
   overflow-x: auto;
@@ -60,9 +60,9 @@
 
 .navBtn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-dim);
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 9999px;
   font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: 0.85rem;
@@ -71,28 +71,41 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  transition: all 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              color 0.2s ease,
+              background 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .navBtn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.navBtn:active {
+  transform: scale(0.96);
 }
 
 .navBtnActive {
-  color: #0d0900;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.45) 0%, rgba(245, 225, 122, 0.95) 40%, rgba(212, 175, 55, 0.95) 100%);
+  color: #0b0700;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(245, 225, 122, 0.95) 38%, rgba(212, 175, 55, 0.98) 100%);
+  border-color: rgba(255, 255, 255, 0.65);
   box-shadow: 
-    0 4px 14px rgba(212, 175, 55, 0.4),
-    inset 1px 1px 1px rgba(255, 255, 255, 0.85);
+    0 6px 18px rgba(212, 175, 55, 0.45),
+    inset 1px 1px 1px rgba(255, 255, 255, 0.9),
+    0 0 16px rgba(212, 175, 55, 0.3);
   font-weight: 700;
 }
 
 .navResetBtn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-dim);
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 9999px;
   font-family: var(--font-playfair), 'Playfair Display', serif;
   font-size: 0.85rem;
@@ -101,14 +114,20 @@
   align-items: center;
   gap: 6px;
   white-space: nowrap;
-  transition: all 0.25s ease;
-  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
   margin-left: 2px;
 }
 
 .navResetBtn:hover {
   color: #ff9999;
-  background: rgba(255, 50, 50, 0.12);
+  background: rgba(255, 50, 50, 0.14);
+  border-color: rgba(255, 80, 80, 0.25);
+  transform: translateY(-1px);
+}
+
+.navResetBtn:active {
+  transform: scale(0.96);
 }
 
 /* Hide label text on small screens, show only icons */
@@ -482,25 +501,25 @@
   margin-top: -4px;
 }
 
-/* Liquid Glass Speech Bubbles */
+/* SwiftUI Liquid Glass Speech Bubbles (Morphing Droplet Union) */
 .msgBubble {
   display: inline-block;
-  padding: 12px 16px;
-  border-radius: 20px;
+  padding: 12px 18px;
+  border-radius: 22px;
   max-width: 85%;
   font-family: var(--font-geist), sans-serif;
   font-size: 0.95rem;
-  line-height: 1.55;
+  line-height: 1.58;
   word-break: break-word;
-  animation: bubbleAppear 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: bubbleAppear 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
 
 @keyframes bubbleAppear {
   0% {
     opacity: 0;
-    transform: translateY(6px) scale(0.97);
+    transform: translateY(8px) scale(0.96);
   }
   100% {
     opacity: 1;
@@ -509,33 +528,39 @@
 }
 
 .msgBubbleUser {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(212, 175, 55, 0.24) 40%, rgba(60, 45, 10, 0.45) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(212, 175, 55, 0.26) 38%, rgba(65, 48, 12, 0.48) 100%);
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.32);
   box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.75),
-    inset 0 0 8px 1px rgba(212, 175, 55, 0.2);
-  backdrop-filter: blur(10px) saturate(1.2);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    0 8px 24px rgba(0, 0, 0, 0.32),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.8),
+    inset 0 0 10px 1px rgba(212, 175, 55, 0.25);
+  backdrop-filter: blur(12px) saturate(1.25);
+  -webkit-backdrop-filter: blur(12px) saturate(1.25);
   border-bottom-right-radius: 6px;
 }
 
 .msgBubbleAssistant {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(0, 36, 72, 0.6) 35%, rgba(0, 16, 36, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(0, 38, 76, 0.62) 35%, rgba(0, 16, 38, 0.82) 100%);
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.26);
   box-shadow: 
-    0 8px 24px rgba(0, 0, 0, 0.35),
-    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.7),
-    inset 0 0 10px 1px rgba(0, 242, 254, 0.18);
-  backdrop-filter: blur(12px) saturate(1.2) url(#displacementFilter);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    0 8px 24px rgba(0, 0, 0, 0.38),
+    inset 2px 2px 0px -1px rgba(255, 255, 255, 0.75),
+    inset 0 0 12px 1px rgba(0, 242, 254, 0.2);
+  backdrop-filter: blur(14px) saturate(1.25) url(#displacementFilter);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
   border-top-left-radius: 6px;
 }
 
+/* Consecutive Assistant Droplets (Morphing Union) */
+.msgRowAssistant + .msgRowAssistant {
+  margin-top: -3px;
+}
+
 .msgRowAssistant + .msgRowAssistant .msgBubbleAssistant {
-  border-top-left-radius: 14px;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 }
 
 .msgBubbleGlitch {
