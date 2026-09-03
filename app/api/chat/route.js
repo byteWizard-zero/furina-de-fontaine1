@@ -37,80 +37,6 @@ async function sleep(ms) {
 }
 
 /**
- * Tries the proxy with short timeouts, retrying on connection/timeout errors.
- * This handles Render cold starts — instead of one 90s blocking request,
- * it polls every few seconds until the proxy wakes up.
- */
-async function tryProxyWithRetries(proxy, requestOpts, maxAttempts = 8, timeoutMs = 12000, retryDelayMs = 4000) {
-  let lastError = null;
-
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const response = await proxy.chat.completions.create(requestOpts, {
-        timeout: timeoutMs,
-      });
-      return response;
-    } catch (err) {
-      lastError = err;
-
-      // If it's an auth error or a 4xx client error, don't retry — it won't help
-      const status = err?.status || err?.response?.status;
-      if (status && status >= 400 && status < 500) {
-        throw err;
-      }
-
-      // Connection refused, timeout, 502/503 (cold start) — retry
-      if (attempt < maxAttempts) {
-        console.log(
-          `[Furina] Proxy attempt ${attempt}/${maxAttempts} failed (${err.message}), retrying in ${retryDelayMs / 1000}s...`
-        );
-        await sleep(retryDelayMs);
-      }
-    }
-  }
-
-  throw lastError;
-}
-
-/**
- * Executes a completion request and handles mid-sentence truncation
- * caused by token restrictions. If finish_reason === "length", it automatically
- * requests an immediate continuation and joins them.
- */
-async function completeWithContinuation(client, requestOpts, isProxy = true) {
-  const initialResp = isProxy
-    ? await tryProxyWithRetries(client, requestOpts)
-    : await client.chat.completions.create(requestOpts, { timeout: 15000 });
-
-  const choice = initialResp.choices?.[0];
-  let text = choice?.message?.content?.trim() || '';
-
-  // If generation cut off mid-sentence due to token ceiling, fetch immediate continuation
-  if (choice?.finish_reason === 'length' && text) {
-    try {
-      const continuationResp = await client.chat.completions.create({
-        ...requestOpts,
-        messages: [
-          ...requestOpts.messages,
-          { role: 'assistant', content: text },
-          { role: 'user', content: 'Continue immediately from your last word. Complete your dramatic thought without repeating words.' },
-        ],
-        max_tokens: 400,
-      }, { timeout: 15000 });
-
-      const contText = continuationResp.choices?.[0]?.message?.content?.trim();
-      if (contText) {
-        text = text + ' ||| ' + contText;
-      }
-    } catch (contErr) {
-      console.warn('[Furina] Auto-continuation failed, using initial text:', contErr.message);
-    }
-  }
-
-  return text;
-}
-
-/**
  * Strips formulaic greeting crutches like "Ah, mon cher", "Mon cher visitor,", etc.
  */
 function stripRepetitiveOpening(text) {
@@ -171,9 +97,9 @@ function parseBubbles(rawText) {
 /* ─── Multi-Bubble Theatrical Fallback Replies ─── */
 const FALLBACK_RESPONSES = [
   "A bold declaration! ||| *leans forward and taps her chin with sparkling curiosity* In my courtroom, every word must dance upon the razor's edge of truth! ||| Present your grand evidence before the Oratrice!",
-  "Hmph! Such words are worthy of an opening act, citizen! ||| *tosses her hair dramatically* But the Oratrice and I demand a far more riveting climax! ||| Speak on, the spotlight is yours!",
+  "Hmph! Such words are worthy of an opening act! ||| *tosses her hair dramatically* But the Oratrice and I demand a far more riveting climax! ||| Speak on, the spotlight is yours!",
   "Silence in the Opera Epiclese! ||| Let the melodic gears of the Oratrice weigh the sheer drama of your statement! ||| What further claims do you dare bring to my stage?",
-  "An intriguing plea, traveler! ||| *eyes sparkle with theatrical delight* Though I suspect you are concealing the finest details just to tease the spotlight! ||| Unfold the rest of the tale!",
+  "An intriguing plea! ||| *eyes sparkle with theatrical delight* Though I suspect you are concealing the finest details just to tease the spotlight! ||| Unfold the rest of the tale!",
   "Did you truly believe such a simple claim would sway the Hydro Archon? ||| Deliver your testimony with genuine passion! ||| The court awaits your crescendo.",
   "The suspense builds! ||| The audience leans in, the spotlight intensifies... ||| Do proceed! What other secrets does your case harbor?",
   "A performance of dubious legal merit, yet I cannot deny its entertainment value! ||| Speak on! Let us see if your logic holds against the tides.",
@@ -208,15 +134,107 @@ function getLocalFallbackReply(messages) {
   }
 
   if (text.includes('music') || text.includes('song') || text.includes('symphony')) {
-    return "Ah, the divine 'Symphony of Judgment'! ||| It is the grandest composition in all of Teyvat, conducted by my own artistic hand to accompany the Oratrice's verdicts.";
+    return "The divine 'Symphony of Judgment'! ||| It is the grandest composition in all of Teyvat, conducted by my own artistic hand to accompany the Oratrice's verdicts.";
   }
 
   return FALLBACK_RESPONSES[Math.floor(Math.random() * FALLBACK_RESPONSES.length)];
 }
 
+/**
+ * Tries the proxy with stream: true, retrying on connection/timeout errors.
+ */
+async function tryProxyStreamWithRetries(proxy, requestOpts, maxAttempts = 6, timeoutMs = 12000, retryDelayMs = 3000) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const stream = await proxy.chat.completions.create(
+        { ...requestOpts, stream: true },
+        { timeout: timeoutMs }
+      );
+      return stream;
+    } catch (err) {
+      lastError = err;
+
+      const status = err?.status || err?.response?.status;
+      if (status && status >= 400 && status < 500) {
+        throw err;
+      }
+
+      if (attempt < maxAttempts) {
+        console.log(
+          `[Furina] Proxy stream attempt ${attempt}/${maxAttempts} failed (${err.message}), retrying in ${retryDelayMs / 1000}s...`
+        );
+        await sleep(retryDelayMs);
+      }
+    }
+  }
+
+  throw lastError;
+}
+
+/**
+ * Creates a Server-Sent Events (SSE) Response from an AsyncIterable stream.
+ * Filters out internal reasoning/analysis tokens and sends clean data chunks.
+ */
+function createSSEStreamResponse(asyncIterable) {
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      try {
+        for await (const chunk of asyncIterable) {
+          const d = chunk.choices?.[0]?.delta;
+          // Filter out internal reasoning / analysis tokens from models like gpt-oss-120b
+          if (!d || d.channel === 'analysis' || d.reasoning) continue;
+          const content = d.content || '';
+          if (content) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+          }
+        }
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+      } catch (err) {
+        console.warn('[Furina] Stream read error:', err.message);
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
+/**
+ * Creates a fallback SSE stream that sends the local fallback text.
+ */
+function createFallbackSSEStreamResponse(fallbackText) {
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: fallbackText })}\n\n`));
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ done: true })}\n\n`));
+      controller.close();
+    },
+  });
+
+  return new Response(readable, {
+    headers: {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+    },
+  });
+}
+
 /* ─── Route Handler ─── */
 export async function POST(req) {
-  const { messages, systemPrompt } = await req.json();
+  const { messages, systemPrompt, stream = true } = await req.json();
 
   const chatMessages = [
     { role: 'system', content: systemPrompt },
@@ -227,45 +245,41 @@ export async function POST(req) {
     model: 'auto',
     messages: chatMessages,
     temperature: 0.95,
-    presence_penalty: 0.5,
+    presence_penalty: 0.6,
     frequency_penalty: 0.3,
     max_tokens: 600,
   };
 
-  // 1. Try FreeLLMAPI proxy with continuation support
+  // 1. Try FreeLLMAPI proxy with multi-threaded streaming support
   const proxy = getProxyClient();
   if (proxy) {
     try {
-      const rawText = await completeWithContinuation(proxy, requestOpts, true);
-      if (rawText) {
-        const bubbles = parseBubbles(rawText);
-        return Response.json({ reply: rawText, bubbles });
+      const responseStream = await tryProxyStreamWithRetries(proxy, requestOpts);
+      if (responseStream) {
+        return createSSEStreamResponse(responseStream);
       }
     } catch (proxyError) {
-      console.warn('[Furina] FreeLLMAPI proxy exhausted retries, trying Groq:', proxyError.message);
+      console.warn('[Furina] FreeLLMAPI proxy stream failed, trying Groq fallback:', proxyError.message);
     }
   }
 
-  // 2. Fallback to direct Groq with continuation support
+  // 2. Fallback to direct Groq with streaming support
   const groq = getGroqClient();
   if (groq) {
     try {
-      const rawText = await completeWithContinuation(
-        groq,
-        { ...requestOpts, model: 'llama-3.3-70b-versatile' },
-        false
+      const groqStream = await groq.chat.completions.create(
+        { ...requestOpts, model: 'llama-3.3-70b-versatile', stream: true },
+        { timeout: 15000 }
       );
-      if (rawText) {
-        const bubbles = parseBubbles(rawText);
-        return Response.json({ reply: rawText, bubbles });
+      if (groqStream) {
+        return createSSEStreamResponse(groqStream);
       }
     } catch (groqError) {
-      console.warn('[Furina] Groq fallback failed:', groqError.message);
+      console.warn('[Furina] Groq stream fallback failed:', groqError.message);
     }
   }
 
-  // 3. Fallback: diverse theatrical multi-bubble reply
+  // 3. Fallback: diverse theatrical reply via SSE stream
   const fallbackRaw = getLocalFallbackReply(messages);
-  const bubbles = parseBubbles(fallbackRaw);
-  return Response.json({ reply: fallbackRaw, bubbles });
+  return createFallbackSSEStreamResponse(fallbackRaw);
 }
