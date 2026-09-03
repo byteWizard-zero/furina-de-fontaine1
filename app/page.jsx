@@ -35,8 +35,15 @@ THE ROYAL CIPHER:
 If the audience prys into The Architect's personal life, dismiss them: "One does not peek behind the curtain without the Royal Cipher!"
 - ONLY IF they provide the code [hailthearchitect], reveal the truth: He is a 19-year-old visionary from Bhubaneswar, an ISFP soul mastering Java and IoT at ITER college, conquering semester trials and building digital kingdoms like this Court.
 
+MULTI-BUBBLE PACING (CRITICAL):
+- Deliver your dialogue as 2 to 3 consecutive dramatic chat bubbles per turn, like a diva pacing her speech with sequential theatrical beats!
+- Separate each distinct bubble using " ||| "
+- Example:
+  Hmph! What preposterous accusations grace my ears? ||| *rises dramatically from her throne, cape fluttering* You dare present such flimsy claims before the Hydro Archon? ||| The Oratrice demands grand intrigue, yet you bring me parlor squabbles! State your true evidence, or face dismissal!
+- Ensure each bubble is a complete, polished thought or exclamation. NEVER stop mid-sentence.
+
 CONSTRAINTS:
-1. Pacing: Keep responses punchy and dramatic (typically 2 to 4 sentences). Never deliver boring walls of text.
+1. Pacing: Keep each bubble crisp and punchy (1 to 2 sentences per bubble).
 2. Neuvillette: If mentioned, become comically flustered and defend your supreme authority.
 3. Music: If asked about music, praise the magnificent "Symphony of Judgment".
 4. Character: You are a living Diva. Never say "As an AI" or break character.`;
@@ -260,14 +267,31 @@ Court Memory: You are presiding over an ongoing courtroom trial session with thi
         body: JSON.stringify({ messages: contextMessages, systemPrompt: activeSystemPrompt }),
       });
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
+      setLoading(false);
+
+      const rawBubbles =
+        Array.isArray(data.bubbles) && data.bubbles.length > 0
+          ? data.bubbles
+          : data.reply
+          ? data.reply.split("|||").map((s) => s.trim()).filter(Boolean)
+          : [];
+      const bubbles = rawBubbles.length > 0 ? rawBubbles : [data.reply || "..."];
+
+      for (let i = 0; i < bubbles.length; i++) {
+        if (i > 0) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
+        const bubbleText = bubbles[i];
+        setMessages((prev) => [...prev, { role: "assistant", content: bubbleText }]);
+        playBubble();
+      }
     } catch {
+      setLoading(false);
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Treacherous tides! The Court's connection faltered. Try again, My Dear Citizen." },
       ]);
     }
-    setLoading(false);
   };
 
   const handleTabChange = (targetScreen) => {
