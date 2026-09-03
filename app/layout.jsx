@@ -17,22 +17,37 @@ const geist = Geist({
 });
 
 export const metadata = {
-  title: 'The Court of Fontaine',
-  description: "Oratrice Mécanique d'Analyse Cardinale — An interactive AI experience in the heart of Fontaine.",
+  metadataBase: new URL('https://furina-de-fontaine1.vercel.app'),
+  title: 'The Court of Fontaine | Hall of Supreme Judgment',
+  description:
+    "Step before the Oratrice Mécanique d'Analyse Cardinale. Lady Furina de Fontaine, Regina of All Waters, Kindreds, Peoples and Laws, convenes supreme judgment upon mortals and gods alike. State your plea before the grand opera bench, or be dissolved beneath the relentless weight of Fontaine's divine justice.",
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
-    title: 'The Furina Court',
-    description: 'An interactive AI experience in the heart of Fontaine.',
+    title: 'The Court of Fontaine | Hall of Supreme Judgment',
+    description:
+      "Step before the Oratrice Mécanique d'Analyse Cardinale. Lady Furina de Fontaine, Regina of All Waters, Kindreds, Peoples and Laws, convenes supreme judgment upon mortals and gods alike. State your plea before the grand opera bench, or be dissolved beneath the relentless weight of Fontaine's divine justice.",
     url: 'https://furina-de-fontaine1.vercel.app/',
-    siteName: 'Furina Court',
+    siteName: 'The Court of Fontaine',
     images: [
       {
-        url: '/og-Furina.jpeg',
-        width: 1200,
-        height: 630,
-        alt: "Lady Furina's dramatic courtroom interface",
+        url: '/furina.webp',
+        width: 736,
+        height: 414,
+        alt: "Lady Furina de Fontaine presiding over the Court of Fontaine",
       },
     ],
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Court of Fontaine | Hall of Supreme Judgment',
+    description:
+      "Lady Furina de Fontaine convenes supreme judgment upon mortals and gods alike. State your plea, or be dissolved beneath the relentless weight of divine justice.",
+    images: ['/furina.webp'],
   },
 };
 
