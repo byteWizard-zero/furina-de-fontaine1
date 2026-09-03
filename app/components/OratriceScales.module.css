@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--navy-overlay, rgba(0, 15, 30, 0.4));
+  border: 1px solid var(--gold-faint, rgba(212, 175, 55, 0.2));
+  border-radius: var(--radius-lg, 16px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 20px var(--gold-faint, rgba(212, 175, 55, 0.1));
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto 20px auto;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 340px;
+  }
+}
+
+.coreGlow {
+  position: absolute;
+  top: -15px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--hydro, #38bdf8) 0%, rgba(56, 189, 248, 0) 70%);
+  box-shadow: 0 0 15px var(--hydro, #38bdf8);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.label {
+  font-family: var(--font-playfair);
+  font-size: 0.85rem;
+  color: var(--gold, #d4af37);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 0 0 8px var(--gold-muted, rgba(212, 175, 55, 0.4));
+}
+
+.svgWrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.svgWrap svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 10px;
+  font-family: var(--font-playfair);
+  font-size: 0.95rem;
+}
+
+@media (min-width: 400px) {
+  .readout {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0;
+  }
+}
+
+.readoutSide {
+  color: var(--gold-muted, rgba(212, 175, 55, 0.5));
+  font-weight: normal;
+  text-align: center;
+}
+
+.readoutSide.active {
+  color: var(--hydro, #00f2fe);
+  font-weight: bold;
+}
+
+.readoutCenter {
+  color: var(--gold, #d4af37);
+  font-weight: bold;
+  text-align: center;
+}
