@@ -1,0 +1,127 @@
+.wrapper {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.setupPanel {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panelTitle {
+  font-family: var(--font-playfair);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.fieldLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--gold-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.select {
+  width: 100%;
+  background: var(--navy-input);
+  border: 1px solid var(--gold-muted);
+  color: var(--text-primary);
+  font-family: var(--font-geist);
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.select:focus {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 0 2px var(--gold-faint);
+}
+
+.fieldHint {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.resultsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.verdictCard {
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border-left: 4px solid;
+  background: linear-gradient(to right, var(--navy-panel), transparent);
+}
+
+.verdictHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.verdictTitle {
+  font-family: var(--font-playfair);
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.verdictText {
+  font-family: var(--font-geist);
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.verdictCase {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: right;
+  margin: 0;
+  font-style: italic;
+}
+
+.simulateBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: var(--font-playfair);
+}

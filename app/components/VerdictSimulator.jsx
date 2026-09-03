@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Gavel, RefreshCw, AlertCircle, ShieldAlert } from "lucide-react";
 import { playGavel, playBubble } from "../utils/SoundManager";
 import OratriceScales from "./OratriceScales";
+import styles from "./VerdictSimulator.module.css";
 
 const DEFENDANTS = [
   { id: "paimon", name: "Paimon", desc: "The floating emergency food companion." },
@@ -26,25 +27,25 @@ const VERDICTS = [
   {
     type: "GUILTY",
     score: -95,
-    title: "🔒 GUILTY AS CHARGED!",
+    title: "GUILTY AS CHARGED!",
     text: "The Oratrice Mecanique d'Analyse Cardinale declares the accused GUILTY! The sentence: 5 days of cleaning the Opera Epiclese, followed by mandatory attendance at Lady Furina's rehearsals to learn proper posture.",
   },
   {
     type: "GUILTY_MEROPIDE",
     score: -75,
-    title: "⛓️ SENTENCED TO MEROPIDE!",
+    title: "SENTENCED TO MEROPIDE!",
     text: "Guilty! The defense was utterly lacking in theatrical conviction. The accused is hereby sentenced to the Fortress of Meropide to work the metal presses. Tea breaks are restricted to 5 minutes.",
   },
   {
     type: "INNOCENT_WITH_BUT",
     score: 45,
-    title: "⚖️ ACQUITTED (WITH CONDITIONS)",
+    title: "ACQUITTED (WITH CONDITIONS)",
     text: "Innocent! However, the Court finds the defendant's behavior highly suspicious. They must present Lady Furina with three boxes of Fontaine's finest macarons as restitution for emotional distress.",
   },
   {
     type: "INNOCENT",
     score: 85,
-    title: "✨ ABSOLUTELY INNOCENT!",
+    title: "ABSOLUTELY INNOCENT!",
     text: "The Oratrice swings entirely in favor of the defense! A magnificent declaration of innocence. The accuser is hereby ordered to perform a dramatic solo dance in the fountain plaza to apologize.",
   },
 ];
@@ -58,21 +59,17 @@ export default function VerdictSimulator() {
 
   const handleSimulate = () => {
     if (isSpinning) return;
-    
     playBubble();
     setIsSpinning(true);
     setCurrentVerdict(null);
     setSimulatorBalance(0);
 
-    // Simulate scale swinging back and forth dramatically
     let count = 0;
     const interval = setInterval(() => {
       setSimulatorBalance((Math.random() - 0.5) * 160);
       count++;
       if (count > 8) {
         clearInterval(interval);
-        
-        // Deliver final verdict
         const finalVerdict = VERDICTS[Math.floor(Math.random() * VERDICTS.length)];
         setCurrentVerdict(finalVerdict);
         setSimulatorBalance(finalVerdict.score);
@@ -86,33 +83,22 @@ export default function VerdictSimulator() {
   const currentCrimeObj = CRIMES.find((c) => c.id === selectedCrime);
 
   return (
-    <div style={{ width: "100%", maxWidth: "800px", display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr", md: "1fr 1fr", gap: "20px" }}>
-        {/* Left Side: Selectors */}
-        <div className="glass" style={{ padding: "20px", borderRadius: "16px", display: "flex", flexDirection: "column", gap: "15px" }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", color: "#d4af37", display: "flex", alignItems: "center", gap: "10px" }}>
-            <ShieldAlert size={24} /> Set Up Trial
-          </h2>
-
-          {/* Defendant Selector */}
+    <div className={styles.wrapper}>
+      <div className={styles.grid}>
+        {/* Setup Column */}
+        <div className={`glass ${styles.setupPanel}`}>
+          <h3 className={styles.panelTitle}>
+            <ShieldAlert size={20} />
+            Case Configuration
+          </h3>
+          
           <div>
-            <label style={{ display: "block", fontSize: "0.85rem", color: "rgba(212,175,55,0.7)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>
-              The Accused
-            </label>
+            <label className={styles.fieldLabel}>Accused Individual</label>
             <select
+              className={styles.select}
               value={selectedDefendant}
-              onChange={(e) => { playBubble(); setSelectedDefendant(e.target.value); }}
-              style={{
-                width: "100%",
-                background: "rgba(0,35,62,0.9)",
-                border: "1px solid rgba(212,175,55,0.4)",
-                borderRadius: "8px",
-                color: "#e8d5a3",
-                padding: "10px",
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "1.1rem",
-                outline: "none"
-              }}
+              onChange={(e) => setSelectedDefendant(e.target.value)}
+              disabled={isSpinning}
             >
               {DEFENDANTS.map((def) => (
                 <option key={def.id} value={def.id}>
@@ -120,30 +106,16 @@ export default function VerdictSimulator() {
                 </option>
               ))}
             </select>
-            <p style={{ fontSize: "0.8rem", color: "rgba(232,213,163,0.5)", marginTop: "4px", fontStyle: "italic" }}>
-              {currentDefObj?.desc}
-            </p>
+            <span className={styles.fieldHint}>{currentDefObj?.desc}</span>
           </div>
 
-          {/* Crime Selector */}
           <div>
-            <label style={{ display: "block", fontSize: "0.85rem", color: "rgba(212,175,55,0.7)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "1px" }}>
-              The Charge
-            </label>
+            <label className={styles.fieldLabel}>Formal Charge</label>
             <select
+              className={styles.select}
               value={selectedCrime}
-              onChange={(e) => { playBubble(); setSelectedCrime(e.target.value); }}
-              style={{
-                width: "100%",
-                background: "rgba(0,35,62,0.9)",
-                border: "1px solid rgba(212,175,55,0.4)",
-                borderRadius: "8px",
-                color: "#e8d5a3",
-                padding: "10px",
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "1.1rem",
-                outline: "none"
-              }}
+              onChange={(e) => setSelectedCrime(e.target.value)}
+              disabled={isSpinning}
             >
               {CRIMES.map((crime) => (
                 <option key={crime.id} value={crime.id}>
@@ -154,82 +126,62 @@ export default function VerdictSimulator() {
           </div>
 
           <button
+            className={`request-btn ${styles.simulateBtn}`}
             onClick={handleSimulate}
             disabled={isSpinning}
-            className="request-btn"
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "10px",
-              marginTop: "10px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              fontSize: "1.1rem"
-            }}
           >
-            {isSpinning ? (
-              <>
-                <RefreshCw className="animate-spin" size={20} /> Oratrice Analyzing...
-              </>
-            ) : (
-              <>
-                <Gavel size={20} /> Initiate Judgment
-              </>
-            )}
+            <Gavel size={18} className={isSpinning ? "animate-spin" : ""} />
+            {isSpinning ? "Deliberating..." : "Request Verdict"}
           </button>
         </div>
 
-        {/* Right Side: Scale Display */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <OratriceScales balance={simulatorBalance} />
-          
-          <AnimatePresence mode="wait">
+        {/* Results Column */}
+        <div className={styles.resultsCol}>
+          <div className={`glass ${styles.setupPanel}`}>
+            <OratriceScales balance={simulatorBalance} />
+          </div>
+
+          <AnimatePresence>
             {currentVerdict && (
               <motion.div
-                initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -15, scale: 0.95 }}
-                className="glass"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className={`glass ${styles.verdictCard}`}
                 style={{
-                  padding: "20px",
-                  borderRadius: "16px",
-                  borderLeft: `5px solid ${currentVerdict.score < 0 ? "#00f2fe" : "#d4af37"}`,
-                  background: "linear-gradient(135deg, rgba(0,25,44,0.9), rgba(0,38,68,0.95))"
+                  borderLeftColor:
+                    currentVerdict.score < 0
+                      ? "var(--danger)"
+                      : "var(--hydro-glow)",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <AlertCircle color={currentVerdict.score < 0 ? "#00f2fe" : "#d4af37"} />
-                  <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.3rem", color: currentVerdict.score < 0 ? "#00f2fe" : "#d4af37" }}>
+                <div className={styles.verdictHeader}>
+                  {currentVerdict.score < 0 ? (
+                    <AlertCircle size={24} color="var(--danger)" />
+                  ) : (
+                    <RefreshCw size={24} color="var(--hydro-glow)" />
+                  )}
+                  <h4
+                    className={styles.verdictTitle}
+                    style={{
+                      color:
+                        currentVerdict.score < 0
+                          ? "var(--danger)"
+                          : "var(--hydro-glow)",
+                    }}
+                  >
                     {currentVerdict.title}
-                  </h3>
+                  </h4>
                 </div>
-                <p style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: "1.15rem",
-                  color: "#e8d5a3",
-                  lineHeight: "1.5"
-                }}>
-                  {currentVerdict.text}
+                <p className={styles.verdictText}>{currentVerdict.text}</p>
+                <p className={styles.verdictCase}>
+                  Case: {currentDefObj?.name} vs. The State of Fontaine
                 </p>
-                <div style={{ fontSize: "0.8rem", color: "rgba(212,175,55,0.4)", marginTop: "12px", textAlign: "right" }}>
-                  Case: {currentDefObj?.name} - vs - The Court of Fontaine
-                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
       </div>
-      <style>{`
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
