@@ -63,6 +63,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  /* Give extra breathing room for pan swing overflow */
+  padding-bottom: 8px;
 }
 
 .svgWrap svg {
