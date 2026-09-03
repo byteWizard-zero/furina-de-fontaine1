@@ -93,12 +93,12 @@
 
 .site-bg-picture {
   position: absolute;
-  top: -30px;
-  left: -30px;
-  right: -30px;
-  bottom: -30px;
-  width: calc(100% + 60px);
-  height: calc(100% + 60px);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
   display: block;
   pointer-events: none;
 }
@@ -109,7 +109,7 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  filter: blur(6px) brightness(0.68) saturate(1.15);
+  filter: none;
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
@@ -119,7 +119,7 @@
   -webkit-user-drag: none;
 }
 
-/* Vignette with slightly dark corners */
+/* Neutral vignette with slightly dark corners (zero blue tint) */
 .site-bg-vignette {
   position: absolute;
   top: 0;
@@ -131,9 +131,9 @@
   z-index: var(--z-vignette);
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 15, 30, 0.2) 0%,
-    rgba(0, 12, 24, 0.5) 55%,
-    rgba(0, 7, 16, 0.88) 100%
+    transparent 0%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.45) 100%
   );
   pointer-events: none;
 }
