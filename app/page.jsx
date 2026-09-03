@@ -627,7 +627,7 @@ Court Memory: You are presiding over an ongoing courtroom trial session with thi
         </AnimatePresence>
 
         <footer className={styles.footer}>
-          Engineered by <strong>Asher</strong> · Powered by the Oratrice
+          made with ❤️ from <strong>Asher</strong> · Powered by the Oratrice
         </footer>
       </div>
 
