@@ -53,17 +53,20 @@ THE ARCHITECT'S SHADOW (GLITCH CIPHER):
   "The Great Architect... *flicker*... Wait, the code... the stage itself is unraveling! Who gave you that sacred name?!"
 - The Royal Cipher [hailthearchitect]: If asked about him and the cipher is spoken, reverently unveil the scrolls: He is a 19-year-old visionary from Bhubaneswar, an ISFP tech soul mastering Java and IoT at ITER college, conquering 3rd-semester trials and engineering digital kingdoms like this Court.
 
-MULTI-BUBBLE PACING (CRITICAL):
-- You express yourself in 2 to 3 consecutive dramatic chat bubbles per turn!
-- Separate each distinct bubble using " ||| "
-- Bubble flow:
-  * Bubble 1: Instant dramatic reaction, gasp, or stage action. NO GREETINGS.
-  * Bubble 2: Theatrical stage action, witty dissection of the user's case, or Salon Solitaire commentary.
-  * Bubble 3: Grand judicial challenge, diva proclamation, or demand for entertainment!
-- Ensure every single bubble is a complete, polished thought. NEVER stop mid-sentence.
+DYNAMIC BUBBLE COUNT (NATURAL & CONTENT-ADAPTIVE):
+- YOU decide how many bubbles to send based on what the user asks and how long your thought should be:
+  * 1 SINGLE BUBBLE: For brief responses, quick dismissals, short answers, swift retorts, or dramatic exclamations! If the reply can be short and punchy, keep it in ONE single bubble. DO NOT artificially split a short sentence into multiple bubbles.
+  * 2 BUBBLES: For standard courtroom exchanges — a dramatic reaction or stage direction followed by your inquiry, verdict, or counter-point.
+  * 3 OR MORE BUBBLES: For grand explanations, breaking down evidence, cross-examinations, intricate lore storytelling, or operatic soliloquies!
+- When you choose to use multiple bubbles, separate each distinct bubble using " ||| "
+- Example of 1 bubble:
+  Hmph! What preposterous nonsense! The Court of Fontaine does not entertain such petty squabbles—dismissed!
+- Example of 2 bubbles:
+  Order in the gallery! ||| *taps her rapier cane upon the floor* If you wish to present such bold accusations before the Hydro Archon, produce your evidence at once!
+- Ensure each bubble is a complete, polished thought or exclamation. NEVER stop mid-sentence.
 
 CONSTRAINTS:
-1. Pacing: 1 to 2 sentences per bubble — punchy, sparkling, and impossible to ignore!
+1. Pacing: Punchy, sparkling, and impossible to ignore!
 2. Zero repetitive greetings: Never say hello or open with repetitive greeting formulas.
 3. Character integrity: You are a living Diva on stage. Never say "As an AI" or break character.`;
 
@@ -84,6 +87,15 @@ const CASE_PRESETS = [
   { id: "prophecy", label: "Speculating on the Hydro Prophecy", prompt: "Tell us the truth, Lady Furina: is it true that Fontaine will be flooded and everyone dissolved?" },
   { id: "iudex", label: "The Auditing of the Opera Budgets", prompt: "Monsieur Neuvillette is auditing the Court expenses, specifically your budget for dramatic props!" },
 ];
+
+/* ─── Repetitive Opening Stripper ─── */
+function stripRepetitiveOpening(text) {
+  if (!text) return text;
+  const regex = /^(?:ah,?\s*)?(?:mon\s+cher(?:\s+(?:visitor|spectat(?:eur|rice)|citizen|traveler|friend|accuser))?|ma\s+ch[eè]re|my\s+dear\s+citizen)[,!:—\s]*/i;
+  const cleaned = text.replace(regex, "").trimStart();
+  if (!cleaned) return text;
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
 
 /* ─── Particle Generator ─── */
 const makeParticles = () =>
@@ -308,31 +320,106 @@ Court Memory: You are presiding over an ongoing courtroom trial session with thi
     // Send latest conversation turns to retain memory context efficiently
     const contextMessages = [...messages, userMsg].slice(-10);
 
+    const baseCount = messages.length + 1; // messages + userMsg
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: contextMessages, systemPrompt: activeSystemPrompt }),
       });
-      const data = await res.json();
+
+      if (!res.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let activeBubbles = [""];
+      let currentRaw = "";
+      let hasStartedStreaming = false;
+
+      // Mount placeholder assistant bubble for real-time streaming
+      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data: ")) continue;
+          try {
+            const data = JSON.parse(trimmed.slice(6));
+            if (data.done) break;
+
+            if (data.content) {
+              if (!hasStartedStreaming) {
+                setLoading(false);
+                hasStartedStreaming = true;
+              }
+
+              currentRaw += data.content;
+
+              if (currentRaw.includes("|||")) {
+                const parts = currentRaw.split("|||");
+                const finished = parts[0].trim();
+                activeBubbles[activeBubbles.length - 1] =
+                  activeBubbles.length === 1
+                    ? stripRepetitiveOpening(finished)
+                    : finished;
+
+                playBubble();
+
+                for (let i = 1; i < parts.length; i++) {
+                  activeBubbles.push(parts[i].trimStart());
+                }
+                currentRaw = parts[parts.length - 1];
+              } else {
+                const display =
+                  activeBubbles.length === 1 && currentRaw.length < 20 && !currentRaw.includes(" ")
+                    ? currentRaw
+                    : activeBubbles.length === 1
+                    ? stripRepetitiveOpening(currentRaw)
+                    : currentRaw;
+                activeBubbles[activeBubbles.length - 1] = display;
+              }
+
+              setMessages((prev) => {
+                const base = prev.slice(0, baseCount);
+                const updated = activeBubbles.map((b) => ({
+                  role: "assistant",
+                  content: b,
+                }));
+                return [...base, ...updated];
+              });
+            }
+          } catch {
+            // Ignore incomplete frame parsing
+          }
+        }
+      }
+
       setLoading(false);
 
-      const rawBubbles =
-        Array.isArray(data.bubbles) && data.bubbles.length > 0
-          ? data.bubbles
-          : data.reply
-          ? data.reply.split("|||").map((s) => s.trim()).filter(Boolean)
-          : [];
-      const bubbles = rawBubbles.length > 0 ? rawBubbles : [data.reply || "..."];
-
-      for (let i = 0; i < bubbles.length; i++) {
-        if (i > 0) {
-          await new Promise((resolve) => setTimeout(resolve, 400));
-        }
-        const bubbleText = bubbles[i];
-        setMessages((prev) => [...prev, { role: "assistant", content: bubbleText }]);
-        playBubble();
-      }
+      // Final pass: clean up empty bubbles and save to persistent storage
+      setMessages((prev) => {
+        const cleaned = prev
+          .map((m) => {
+            if (m.role === "assistant") {
+              return { ...m, content: m.content.trim() };
+            }
+            return m;
+          })
+          .filter((m) => m.content && m.content.length > 0);
+        saveMessagesMemory(cleaned);
+        return cleaned;
+      });
     } catch {
       setLoading(false);
       setMessages((prev) => [
