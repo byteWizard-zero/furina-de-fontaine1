@@ -8,6 +8,13 @@ import OratriceScales from "./components/OratriceScales";
 import VerdictSimulator from "./components/VerdictSimulator";
 import SalonSolitaire from "./components/SalonSolitaire";
 import { playGavel, playBubble, playGlitch } from "./utils/SoundManager";
+import {
+  loadCourtMemory,
+  saveMessagesMemory,
+  saveProfileMemory,
+  saveCourtStateMemory,
+  clearCourtMemory,
+} from "./utils/browserMemory";
 import styles from "./page.module.css";
 
 /* ─── System Prompt ─── */
@@ -85,6 +92,33 @@ export default function CourtOfFontaine() {
 
   const bottomRef = useRef(null);
 
+  /* Load persistent courtroom memory from browser on mount */
+  useEffect(() => {
+    const memory = loadCourtMemory();
+    if (memory.username) setUsername(memory.username);
+    if (memory.userTitle) setUserTitle(memory.userTitle);
+    if (memory.entered && memory.messages && memory.messages.length > 0) {
+      setMessages(memory.messages);
+      setScreen(memory.screen || "chat");
+      setVerdictBalance(memory.balance || 0);
+      setActiveCase(memory.activeCase || "normal");
+    }
+  }, []);
+
+  /* Persist messages whenever updated */
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveMessagesMemory(messages);
+    }
+  }, [messages]);
+
+  /* Persist screen, balance, and active case */
+  useEffect(() => {
+    if (screen !== "prologue") {
+      saveCourtStateMemory(screen, verdictBalance, activeCase);
+    }
+  }, [screen, verdictBalance, activeCase]);
+
   /* Initialize floating bubbles (client-only) */
   useEffect(() => {
     setBubbles(
@@ -159,6 +193,18 @@ export default function CourtOfFontaine() {
 
     setMessages([{ role: "assistant", content: initialMessage }]);
     setScreen("chat");
+    saveProfileMemory(name, title, true);
+    saveCourtStateMemory("chat", 0, activeCase);
+  };
+
+  const handleResetCourt = () => {
+    playGavel();
+    clearCourtMemory();
+    setMessages([]);
+    setVerdictBalance(0);
+    setScreen("prologue");
+    setInput("");
+    setIsGlitched(false);
   };
 
   const handlePresetCase = (e) => {
@@ -199,15 +245,19 @@ export default function CourtOfFontaine() {
 
     const activeSystemPrompt = `${SYSTEM_PROMPT}
  
-VISITOR CONTEXT:
+VISITOR DOSSIER & COURT MEMORY:
 Name: ${username.trim() || "Dear Citizen"}
-Title: ${userTitle.trim() || "Foreign Traveler"}`;
+Title: ${userTitle.trim() || "Foreign Traveler"}
+Court Memory: You are presiding over an ongoing courtroom trial session with this visitor. Maintain full continuity with their previous statements, evidence, and reactions recorded in the courtroom log.`;
+
+    // Send latest conversation turns to retain memory context efficiently
+    const contextMessages = [...messages, userMsg].slice(-10);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, userMsg], systemPrompt: activeSystemPrompt }),
+        body: JSON.stringify({ messages: contextMessages, systemPrompt: activeSystemPrompt }),
       });
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
@@ -303,6 +353,14 @@ Title: ${userTitle.trim() || "Foreign Traveler"}`;
             >
               <Compass size={16} />
               <span className={styles.navLabel}>Salon Solitaire</span>
+            </button>
+            <button
+              onClick={handleResetCourt}
+              className={styles.navResetBtn}
+              title="Reset Trial History & Memory"
+            >
+              <RotateCcw size={14} />
+              <span className={styles.navLabel}>New Trial</span>
             </button>
           </nav>
         )}

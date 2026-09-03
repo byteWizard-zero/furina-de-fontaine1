@@ -76,6 +76,27 @@
   border-bottom-color: var(--gold);
 }
 
+.navResetBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 8px 12px;
+  font-family: var(--font-playfair), 'Playfair Display', serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-left: 1px solid var(--gold-faint);
+  margin-left: 2px;
+}
+
+.navResetBtn:hover {
+  color: #ff9999;
+}
+
 /* Hide label text on small screens, show only icons */
 .navLabel {
   display: none;
