@@ -55,6 +55,31 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${geist.variable}`}>
       <body>
+        {/* Liquid Glass SVG Displacement Filter */}
+        <svg
+          width="0"
+          height="0"
+          style={{ position: 'absolute', pointerEvents: 'none', zIndex: -1, opacity: 0 }}
+          aria-hidden="true"
+        >
+          <defs>
+            <filter id="displacementFilter" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence
+                type="turbulence"
+                baseFrequency="0.012"
+                numOctaves="2"
+                result="turbulence"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="turbulence"
+                scale="28"
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          </defs>
+        </svg>
         {children}
         <Analytics />
       </body>

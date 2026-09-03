@@ -20,11 +20,20 @@
 }
 
 .setupPanel {
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 28, 56, 0.44) 45%, rgba(0, 12, 26, 0.7) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    0 16px 40px rgba(0, 8, 22, 0.5),
+    inset 4px 4px 0px -4px rgba(255, 255, 255, 0.75),
+    inset 0 0 12px rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px) url(#displacementFilter);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
 }
 
 .panelTitle {
@@ -48,21 +57,24 @@
 
 .select {
   width: 100%;
-  background: var(--navy-input);
-  border: 1px solid var(--gold-muted);
+  background: rgba(0, 14, 28, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
   font-family: var(--font-geist);
-  padding: 0.75rem;
+  padding: 0.85rem 1rem;
   border-radius: var(--radius-md);
   font-size: 1rem;
   cursor: pointer;
   outline: none;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .select:focus {
   border-color: var(--gold-bright);
-  box-shadow: 0 0 0 2px var(--gold-faint);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.35);
 }
 
 .fieldHint {
@@ -80,10 +92,20 @@
 }
 
 .verdictCard {
-  padding: 1.5rem;
-  border-radius: var(--radius-lg);
-  border-left: 4px solid;
-  background: linear-gradient(to right, var(--navy-panel), transparent);
+  padding: 1.75rem;
+  border-radius: 24px;
+  border-left: 5px solid;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(0, 32, 64, 0.5) 45%, rgba(0, 14, 30, 0.72) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-right: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    0 16px 40px rgba(0, 8, 22, 0.5),
+    inset 3px 3px 0px -2px rgba(255, 255, 255, 0.7),
+    inset 0 0 12px rgba(0, 242, 254, 0.15);
+  backdrop-filter: blur(14px) url(#displacementFilter);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
 }
 
 .verdictHeader {
