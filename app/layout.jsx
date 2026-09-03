@@ -80,6 +80,24 @@ export default function RootLayout({ children }) {
             </filter>
           </defs>
         </svg>
+        {/* Rock-Solid Pinned Background Layer: img1 for desktop, img2 for mobile */}
+        <div className="site-bg-layer" aria-hidden="true">
+          <picture className="site-bg-picture">
+            <source
+              media="(min-aspect-ratio: 1/1), (min-width: 800px)"
+              srcSet="/img1.png"
+            />
+            <img
+              src="/img2.png"
+              alt=""
+              className="site-bg-image"
+              loading="eager"
+              decoding="async"
+            />
+          </picture>
+          <div className="site-bg-vignette" />
+        </div>
+
         {children}
         <Analytics />
       </body>

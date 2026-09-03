@@ -447,12 +447,6 @@ Court Memory: You are presiding over an ongoing courtroom trial session with thi
   /* ─── Render ─── */
   return (
     <>
-      {/* Site Background Layer: img1 for desktop, img2 for mobile with subtle blur & vignette */}
-      <div className="site-bg-layer" aria-hidden="true">
-        <div className="site-bg-image" />
-        <div className="site-bg-vignette" />
-      </div>
-
       {/* Glitch scanline overlay */}
       {isGlitched && <div className="scanline" />}
 
