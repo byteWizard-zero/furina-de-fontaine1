@@ -5,7 +5,7 @@
 /* ─── Root Container ─── */
 .pageRoot {
   min-height: 100dvh;
-  background: var(--navy-deep);
+  background: transparent;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
