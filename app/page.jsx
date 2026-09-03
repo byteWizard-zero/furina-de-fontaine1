@@ -408,13 +408,6 @@ Court Memory: You are presiding over an ongoing courtroom trial session with thi
 
         {/* Header */}
         <header className={styles.header}>
-          <img
-            src="/logo.png"
-            alt="The Court of Fontaine Crest"
-            className={styles.siteLogo}
-            width={60}
-            height={52}
-          />
           <h1
             className={`${styles.title} title-glow ${isGlitched ? `${styles.glitchTitle} glitch-text` : ""}`}
           >

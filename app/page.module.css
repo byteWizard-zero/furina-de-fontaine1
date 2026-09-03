@@ -116,30 +116,6 @@
 .header {
   text-align: center;
   margin-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.siteLogo {
-  width: 48px;
-  height: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.45));
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-  user-select: none;
-}
-
-@media (min-width: 768px) {
-  .siteLogo {
-    width: 60px;
-  }
-}
-
-.siteLogo:hover {
-  transform: scale(1.08) rotate(-2deg);
-  filter: drop-shadow(0 0 16px rgba(0, 242, 254, 0.65));
 }
 
 .title {
