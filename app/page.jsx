@@ -158,6 +158,35 @@ export default function CourtOfFontaine() {
     );
   }, []);
 
+  /* Instant proxy warmup on site entry or refresh */
+  useEffect(() => {
+    let cancelled = false;
+
+    async function pingProxy() {
+      // Direct browser ping to wake up the Render service immediately
+      fetch("https://my-freellmapi-proxy.onrender.com/", { mode: "no-cors" }).catch(() => {});
+
+      // Server-side ping loop to /api/warmup until warm or 5 attempts completed
+      for (let attempt = 0; attempt < 5; attempt++) {
+        if (cancelled) break;
+        try {
+          const res = await fetch("/api/warmup");
+          const data = await res.json();
+          if (data?.status === "warm") break;
+        } catch {
+          // Retry silently if waking
+        }
+        await new Promise((r) => setTimeout(r, 4000));
+      }
+    }
+
+    pingProxy();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   /* Auto-scroll chat to bottom */
   useEffect(() => {
     if (screen === "chat") {
